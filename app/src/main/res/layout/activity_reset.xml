@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/back4"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".ResetActivity">
+
+    <TextView
+        android:layout_width="386dp"
+        android:layout_height="55dp"
+        android:layout_gravity="center|top"
+        android:layout_marginBottom="50dp"
+        android:fontFamily="@font/baloo_da"
+        android:gravity="center"
+        android:text="Reset Password"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="#F7F6FA"
+        android:textSize="32sp" />
+
+    <EditText
+        android:id="@+id/reset_login"
+        android:layout_width="351dp"
+        android:layout_height="45dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/email_rounded"
+        android:drawableLeft="@drawable/log_person"
+        android:drawablePadding="15dp"
+        android:drawableTint="@color/date_color"
+        android:fontFamily="@font/cantora_one"
+        android:hint="Email id"
+        android:paddingLeft="8dp">
+
+    </EditText>
+
+    <Button
+        android:id="@+id/btn_reset"
+        android:layout_width="174dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/round_corner"
+        android:fontFamily="sans-serif-medium"
+        android:text="Send Email"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="#F7F5F8"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="360dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center|right"
+        android:layout_marginTop="120dp"
+        android:fontFamily="@font/andada"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="After clicking the button a mail will be sent to your registered email address for resetting your new password."
+        android:textColor="#424A49"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+
+</LinearLayout>

@@ -1,0 +1,399 @@
+<html>
+<head>
+<title>DashBoardFragment.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #8c8c8c; font-style: italic;}
+.s3 { color: #8c8c8c; font-style: italic;}
+.s4 { color: #1750eb;}
+.s5 { color: #067d17;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+DashBoardFragment.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.expensemanager;</span>
+
+<span class="s0">import </span><span class="s1">android.app.AlertDialog;</span>
+<span class="s0">import </span><span class="s1">android.graphics.drawable.Animatable;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle;</span>
+<span class="s0">import </span><span class="s1">java.text.DateFormat;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull;</span>
+<span class="s0">import </span><span class="s1">androidx.fragment.app.Fragment;</span>
+
+<span class="s0">import </span><span class="s1">android.text.TextUtils;</span>
+<span class="s0">import </span><span class="s1">android.view.LayoutInflater;</span>
+<span class="s0">import </span><span class="s1">android.view.View;</span>
+<span class="s0">import </span><span class="s1">android.view.ViewGroup;</span>
+<span class="s0">import </span><span class="s1">android.view.animation.Animation;</span>
+<span class="s0">import </span><span class="s1">android.view.animation.AnimationUtils;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button;</span>
+<span class="s0">import </span><span class="s1">android.widget.EditText;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast;</span>
+
+<span class="s0">import </span><span class="s1">com.example.expensemanager.Model.Data;</span>
+<span class="s0">import </span><span class="s1">com.google.android.material.floatingactionbutton.FloatingActionButton;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DataSnapshot;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseError;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseReference;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.FirebaseDatabase;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.ValueEventListener;</span>
+
+<span class="s0">import </span><span class="s1">java.text.DateFormat;</span>
+<span class="s0">import </span><span class="s1">java.util.Date;</span>
+
+<span class="s2">/**</span>
+ <span class="s2">* A simple {</span><span class="s3">@link </span><span class="s2">Fragment} subclass.</span>
+ <span class="s2">* Use the {</span><span class="s3">@link </span><span class="s2">DashBoardFragment#newInstance} factory method to</span>
+ <span class="s2">* create an instance of this fragment.</span>
+ <span class="s2">*/</span>
+<span class="s0">public class </span><span class="s1">DashBoardFragment </span><span class="s0">extends </span><span class="s1">Fragment {</span>
+
+    <span class="s2">//floating button</span>
+
+    <span class="s0">private </span><span class="s1">FloatingActionButton fab_main_btn;</span>
+    <span class="s0">private </span><span class="s1">FloatingActionButton fab_income_btn;</span>
+    <span class="s0">private </span><span class="s1">FloatingActionButton fab_expense_btn;</span>
+
+    <span class="s2">//floating button textview..</span>
+
+    <span class="s0">private </span><span class="s1">TextView fab_income_txt;</span>
+    <span class="s0">private </span><span class="s1">TextView fab_expense_txt;</span>
+
+    <span class="s2">//boolean</span>
+
+    <span class="s0">private boolean </span><span class="s1">isOpen=</span><span class="s0">false</span><span class="s1">;</span>
+
+    <span class="s2">//Animation</span>
+
+    <span class="s0">private </span><span class="s1">Animation FadeOpen,FadeClose;</span>
+
+    <span class="s2">//Dashboard income and expense result..</span>
+
+    <span class="s0">private </span><span class="s1">TextView totalIncomeResult;</span>
+    <span class="s0">private </span><span class="s1">TextView totalExpenseResult;</span>
+
+    <span class="s2">//Dashboard net income...</span>
+
+    <span class="s0">private </span><span class="s1">TextView BalanceResult;</span>
+
+    <span class="s2">////Firebase...</span>
+
+    <span class="s0">private </span><span class="s1">FirebaseAuth mAuth;</span>
+    <span class="s0">private </span><span class="s1">DatabaseReference mIncomeDatabase;</span>
+    <span class="s0">private </span><span class="s1">DatabaseReference mExpenseDatabase;</span>
+    <span class="s0">private int </span><span class="s1">expense1 = </span><span class="s4">0</span><span class="s1">;</span>
+    <span class="s0">private int </span><span class="s1">expense2 = </span><span class="s4">0</span><span class="s1">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">View onCreateView(</span><span class="s0">final </span><span class="s1">LayoutInflater inflater, ViewGroup container,</span>
+                             <span class="s1">Bundle savedInstanceState) {</span>
+        <span class="s2">// Inflate the layout for this fragment</span>
+        <span class="s1">View myview= inflater.inflate(R.layout.fragment_dash_board, container, </span><span class="s0">false</span><span class="s1">);</span>
+
+
+        <span class="s1">mAuth=FirebaseAuth.getInstance();</span>
+        <span class="s1">FirebaseUser mUser=mAuth.getCurrentUser();</span>
+        <span class="s1">String uid=mUser.getUid();</span>
+
+        <span class="s1">mIncomeDatabase= FirebaseDatabase.getInstance().getReference().child(</span><span class="s5">&quot;IncomeData&quot;</span><span class="s1">).child(uid);</span>
+        <span class="s1">mExpenseDatabase= FirebaseDatabase.getInstance().getReference().child(</span><span class="s5">&quot;ExpenseData&quot;</span><span class="s1">).child(uid);</span>
+
+        <span class="s2">//connect floating button to layout</span>
+
+        <span class="s1">fab_main_btn=myview.findViewById(R.id.fb_main_plus_btn);</span>
+        <span class="s1">fab_income_btn=myview.findViewById(R.id.income_Ft_btn);</span>
+        <span class="s1">fab_expense_btn=myview.findViewById(R.id.expense_Ft_btn);</span>
+
+        <span class="s2">//connect floating text</span>
+
+        <span class="s1">fab_income_txt=myview.findViewById(R.id.income_ft_text);</span>
+        <span class="s1">fab_expense_txt=myview.findViewById(R.id.expense_ft_text);</span>
+
+        <span class="s2">//Total income and expense result...</span>
+
+        <span class="s1">totalIncomeResult=myview.findViewById(R.id.income_set_result);</span>
+        <span class="s1">totalExpenseResult=myview.findViewById(R.id.expense_set_result);</span>
+        <span class="s1">BalanceResult=myview.findViewById(R.id.balance_result);</span>
+
+        <span class="s2">//Animation connect..</span>
+
+        <span class="s1">FadeOpen= AnimationUtils.loadAnimation(getActivity(),R.anim.fade_open);</span>
+        <span class="s1">FadeClose=AnimationUtils.loadAnimation(getActivity(),R.anim.fade_close);</span>
+
+        <span class="s1">fab_main_btn.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+                <span class="s1">addData();</span>
+
+                <span class="s0">if</span><span class="s1">(isOpen){</span>
+
+                    <span class="s1">fab_income_btn.startAnimation(FadeClose);</span>
+                    <span class="s1">fab_expense_btn.startAnimation(FadeClose);</span>
+                    <span class="s1">fab_income_btn.setClickable(</span><span class="s0">false</span><span class="s1">);</span>
+                    <span class="s1">fab_expense_btn.setClickable(</span><span class="s0">false</span><span class="s1">);</span>
+
+                    <span class="s1">fab_income_txt.startAnimation(FadeClose);</span>
+                    <span class="s1">fab_expense_txt.startAnimation(FadeClose);</span>
+                    <span class="s1">fab_income_txt.setClickable(</span><span class="s0">false</span><span class="s1">);</span>
+                    <span class="s1">fab_expense_txt.setClickable(</span><span class="s0">false</span><span class="s1">);</span>
+                    <span class="s1">isOpen=</span><span class="s0">false</span><span class="s1">;</span>
+                <span class="s1">}</span><span class="s0">else </span><span class="s1">{</span>
+
+                    <span class="s1">fab_income_btn.startAnimation(FadeOpen);</span>
+                    <span class="s1">fab_expense_btn.startAnimation(FadeOpen);</span>
+                    <span class="s1">fab_income_btn.setClickable(</span><span class="s0">true</span><span class="s1">);</span>
+                    <span class="s1">fab_expense_btn.setClickable(</span><span class="s0">true</span><span class="s1">);</span>
+
+                    <span class="s1">fab_income_txt.startAnimation(FadeOpen);</span>
+                    <span class="s1">fab_expense_txt.startAnimation(FadeOpen);</span>
+                    <span class="s1">fab_income_txt.setClickable(</span><span class="s0">true</span><span class="s1">);</span>
+                    <span class="s1">fab_expense_txt.setClickable(</span><span class="s0">true</span><span class="s1">);</span>
+                    <span class="s1">isOpen=</span><span class="s0">true</span><span class="s1">;</span>
+                <span class="s1">}</span>
+
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s2">//Calculate total income..</span>
+
+        <span class="s1">mIncomeDatabase.addValueEventListener(</span><span class="s0">new </span><span class="s1">ValueEventListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onDataChange(@NonNull DataSnapshot snapshot) {</span>
+
+                <span class="s0">int </span><span class="s1">totalSum=</span><span class="s4">0</span><span class="s1">;</span>
+                <span class="s0">for</span><span class="s1">(DataSnapshot mysnap:snapshot.getChildren()){</span>
+
+                    <span class="s1">Data data=mysnap.getValue(Data.</span><span class="s0">class</span><span class="s1">);</span>
+                    <span class="s1">totalSum+=data.getAmount();</span>
+                    <span class="s1">expense1 = totalSum;</span>
+                    <span class="s1">String stResult=String.valueOf(totalSum);</span>
+                    <span class="s1">totalIncomeResult.setText(stResult);</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onCancelled(@NonNull DatabaseError error) {</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s2">//Calculate total expenses..</span>
+
+        <span class="s1">mExpenseDatabase.addValueEventListener(</span><span class="s0">new </span><span class="s1">ValueEventListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onDataChange(@NonNull DataSnapshot snapshot) {</span>
+
+                <span class="s0">int </span><span class="s1">totalSum1=</span><span class="s4">0</span><span class="s1">;</span>
+                <span class="s0">for </span><span class="s1">(DataSnapshot mysnapshot:snapshot.getChildren()){</span>
+
+                    <span class="s1">Data data=mysnapshot.getValue(Data.</span><span class="s0">class</span><span class="s1">);</span>
+                    <span class="s1">totalSum1+=data.getAmount();</span>
+                    <span class="s1">expense2=totalSum1;</span>
+                    <span class="s1">String strTotalSum=String.valueOf(totalSum1);</span>
+                    <span class="s1">totalExpenseResult.setText(strTotalSum);</span>
+                    <span class="s1">BalanceResult.setText(String.valueOf(expense1-expense2));</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onCancelled(@NonNull DatabaseError error) {</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+
+        <span class="s0">return </span><span class="s1">myview;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s2">//Floating button Animation</span>
+
+    <span class="s0">private void </span><span class="s1">ftAnimation(){</span>
+
+        <span class="s0">if</span><span class="s1">(isOpen){</span>
+
+            <span class="s1">fab_income_btn.startAnimation(FadeClose);</span>
+            <span class="s1">fab_expense_btn.startAnimation(FadeClose);</span>
+            <span class="s1">fab_income_btn.setClickable(</span><span class="s0">false</span><span class="s1">);</span>
+            <span class="s1">fab_expense_btn.setClickable(</span><span class="s0">false</span><span class="s1">);</span>
+
+            <span class="s1">fab_income_txt.startAnimation(FadeClose);</span>
+            <span class="s1">fab_expense_txt.startAnimation(FadeClose);</span>
+            <span class="s1">fab_income_txt.setClickable(</span><span class="s0">false</span><span class="s1">);</span>
+            <span class="s1">fab_expense_txt.setClickable(</span><span class="s0">false</span><span class="s1">);</span>
+            <span class="s1">isOpen=</span><span class="s0">false</span><span class="s1">;</span>
+        <span class="s1">}</span><span class="s0">else </span><span class="s1">{</span>
+
+            <span class="s1">fab_income_btn.startAnimation(FadeOpen);</span>
+            <span class="s1">fab_expense_btn.startAnimation(FadeOpen);</span>
+            <span class="s1">fab_income_btn.setClickable(</span><span class="s0">true</span><span class="s1">);</span>
+            <span class="s1">fab_expense_btn.setClickable(</span><span class="s0">true</span><span class="s1">);</span>
+
+            <span class="s1">fab_income_txt.startAnimation(FadeOpen);</span>
+            <span class="s1">fab_expense_txt.startAnimation(FadeOpen);</span>
+            <span class="s1">fab_income_txt.setClickable(</span><span class="s0">true</span><span class="s1">);</span>
+            <span class="s1">fab_expense_txt.setClickable(</span><span class="s0">true</span><span class="s1">);</span>
+            <span class="s1">isOpen=</span><span class="s0">true</span><span class="s1">;</span>
+        <span class="s1">}</span>
+
+
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">addData(){</span>
+
+        <span class="s2">//Fab button income..</span>
+
+        <span class="s1">fab_income_btn.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+                <span class="s1">incomeDataInsert();</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s1">fab_expense_btn.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+                <span class="s1">expenseDataInsert();</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">incomeDataInsert(){</span>
+
+        <span class="s1">AlertDialog.Builder mydialog=</span><span class="s0">new </span><span class="s1">AlertDialog.Builder(getActivity());</span>
+        <span class="s1">LayoutInflater inflater=LayoutInflater.from(getActivity());</span>
+        <span class="s1">View myview=inflater.inflate(R.layout.custom_layout_for_insertdata,</span><span class="s0">null</span><span class="s1">);</span>
+        <span class="s1">mydialog.setView(myview);</span>
+        <span class="s0">final </span><span class="s1">AlertDialog dialog=mydialog.create();</span>
+
+        <span class="s1">dialog.setCancelable(</span><span class="s0">false</span><span class="s1">);</span>
+
+        <span class="s0">final </span><span class="s1">EditText edtAmount=myview.findViewById(R.id.amount_edt);</span>
+        <span class="s0">final </span><span class="s1">EditText edtType=myview.findViewById(R.id.type_edt);</span>
+        <span class="s0">final </span><span class="s1">EditText edtNote=myview.findViewById(R.id.note_edt);</span>
+
+        <span class="s1">Button btnSave=myview.findViewById(R.id.btnSave);</span>
+        <span class="s1">Button btnCancel=myview.findViewById(R.id.btnCancel);</span>
+
+        <span class="s1">btnSave.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+
+                <span class="s1">String type=edtType.getText().toString().trim();</span>
+                <span class="s1">String amount=edtAmount.getText().toString().trim();</span>
+                <span class="s1">String note=edtNote.getText().toString().trim();</span>
+
+                <span class="s0">if</span><span class="s1">(TextUtils.isEmpty(type)){</span>
+                    <span class="s1">edtType.setError(</span><span class="s5">&quot;Required Field...&quot;</span><span class="s1">);</span>
+                    <span class="s0">return</span><span class="s1">;</span>
+                <span class="s1">}</span>
+
+                <span class="s0">if</span><span class="s1">(TextUtils.isEmpty(amount)){</span>
+                    <span class="s1">edtAmount.setError(</span><span class="s5">&quot;Required Field...&quot;</span><span class="s1">);</span>
+                    <span class="s0">return</span><span class="s1">;</span>
+                <span class="s1">}</span>
+
+                <span class="s0">int </span><span class="s1">ouramountint=Integer.parseInt(amount);</span>
+
+                <span class="s0">if</span><span class="s1">(TextUtils.isEmpty(note)) {</span>
+                    <span class="s1">edtNote.setError(</span><span class="s5">&quot;Required Field...&quot;</span><span class="s1">);</span>
+                    <span class="s0">return</span><span class="s1">;</span>
+                <span class="s1">}</span>
+                <span class="s1">String id=mIncomeDatabase.push().getKey();</span>
+                <span class="s1">String mDate= DateFormat.getDateInstance().format(</span><span class="s0">new </span><span class="s1">Date());</span>
+                <span class="s1">Data data=</span><span class="s0">new </span><span class="s1">Data(ouramountint,type,note,id,mDate);</span>
+
+                <span class="s1">mIncomeDatabase.child(id).setValue(data);</span>
+
+                <span class="s1">Toast.makeText(getActivity(),</span><span class="s5">&quot;Data Added&quot;</span><span class="s1">,Toast.LENGTH_SHORT).show();</span>
+
+                <span class="s1">ftAnimation();</span>
+                <span class="s1">dialog.dismiss();</span>
+
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s1">btnCancel.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+                <span class="s1">ftAnimation();</span>
+                <span class="s1">dialog.dismiss();</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s1">dialog.show();</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">expenseDataInsert(){</span>
+
+        <span class="s1">AlertDialog.Builder myDialog=</span><span class="s0">new </span><span class="s1">AlertDialog.Builder(getActivity());</span>
+        <span class="s1">LayoutInflater inflater=LayoutInflater.from(getActivity());</span>
+        <span class="s1">View myview=inflater.inflate(R.layout.custom_layout_for_insertdata,</span><span class="s0">null</span><span class="s1">);</span>
+        <span class="s1">myDialog.setView(myview);</span>
+
+        <span class="s0">final </span><span class="s1">AlertDialog dialog=myDialog.create();</span>
+
+        <span class="s1">dialog.setCancelable(</span><span class="s0">false</span><span class="s1">);</span>
+
+        <span class="s0">final </span><span class="s1">EditText amount=myview.findViewById(R.id.amount_edt);</span>
+        <span class="s0">final </span><span class="s1">EditText type=myview.findViewById(R.id.type_edt);</span>
+        <span class="s0">final </span><span class="s1">EditText note=myview.findViewById(R.id.note_edt);</span>
+
+        <span class="s1">Button btnSave=myview.findViewById(R.id.btnSave);</span>
+        <span class="s1">Button btnCancel=myview.findViewById(R.id.btnCancel);</span>
+
+        <span class="s1">btnSave.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+
+                <span class="s1">String tmAmount=amount.getText().toString().trim();</span>
+                <span class="s1">String tmType=type.getText().toString().trim();</span>
+                <span class="s1">String tmNote=note.getText().toString().trim();</span>
+
+                <span class="s0">if</span><span class="s1">(TextUtils.isEmpty(tmAmount)){</span>
+                    <span class="s1">amount.setError(</span><span class="s5">&quot;Required Field...&quot;</span><span class="s1">);</span>
+                    <span class="s0">return</span><span class="s1">;</span>
+                <span class="s1">}</span>
+
+                <span class="s0">int </span><span class="s1">inamount=Integer.parseInt(tmAmount);</span>
+
+                <span class="s0">if </span><span class="s1">(TextUtils.isEmpty(tmType)){</span>
+                    <span class="s1">type.setError(</span><span class="s5">&quot;Required Field...&quot;</span><span class="s1">);</span>
+                    <span class="s0">return</span><span class="s1">;</span>
+                <span class="s1">}</span>
+                <span class="s0">if</span><span class="s1">(TextUtils.isEmpty(tmNote)){</span>
+                    <span class="s1">note.setError(</span><span class="s5">&quot;Required Field...&quot;</span><span class="s1">);</span>
+                    <span class="s0">return</span><span class="s1">;</span>
+                <span class="s1">}</span>
+
+
+                <span class="s1">String id=mExpenseDatabase.push().getKey();</span>
+                <span class="s1">String mDate=DateFormat.getDateInstance().format(</span><span class="s0">new </span><span class="s1">Date());</span>
+                <span class="s1">Data data=</span><span class="s0">new </span><span class="s1">Data(inamount,tmType,tmNote,id,mDate);</span>
+                <span class="s1">mExpenseDatabase.child(id).setValue(data);</span>
+                <span class="s1">Toast.makeText(getActivity(),</span><span class="s5">&quot;Data Added&quot;</span><span class="s1">,Toast.LENGTH_SHORT).show();</span>
+                <span class="s1">ftAnimation();</span>
+                <span class="s1">dialog.dismiss();</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s1">btnCancel.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+                <span class="s1">ftAnimation();</span>
+                <span class="s1">dialog.dismiss();</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+        <span class="s1">dialog.show();</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

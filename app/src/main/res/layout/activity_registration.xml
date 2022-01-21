@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/back4"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    tools:context=".RegistrationActivity">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_marginBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="218dp"
+                android:layout_height="51dp"
+                android:layout_gravity="center|top"
+                android:layout_marginBottom="60dp"
+                android:fontFamily="@font/baloo_da"
+                android:gravity="center"
+                android:text="REGISTRATION"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="#F7F6FA"
+                android:textSize="32sp" />
+
+            <EditText
+                android:id="@+id/email_reg"
+                android:layout_width="351dp"
+                android:layout_height="45dp"
+                android:layout_margin="10dp"
+                android:layout_marginBottom="30dp"
+                android:background="@drawable/email_rounded"
+                android:drawablePadding="15dp"
+                android:drawableTint="@color/date_color"
+                android:fontFamily="@font/cantora_one"
+                android:hint="Email id"
+                android:paddingLeft="20dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                app:passwordToggleTint="@color/date_color"
+                app:passwordToggleEnabled="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/password_reg"
+                    android:layout_width="351dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/email_rounded"
+                    android:drawablePadding="15dp"
+                    android:fontFamily="@font/cantora_one"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:paddingLeft="20dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_reg"
+                android:layout_width="142dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/round_corner"
+                android:fontFamily="sans-serif-medium"
+                android:text="SIGN UP"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="#F7F5F8"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/signin_here"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/andada"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="      Already have an account? Log In"
+                android:textColor="#195750"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

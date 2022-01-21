@@ -1,0 +1,274 @@
+<html>
+<head>
+<title>IncomeFragment.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #8c8c8c; font-style: italic;}
+.s3 { color: #8c8c8c; font-style: italic;}
+.s4 { color: #067d17;}
+.s5 { color: #1750eb;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+IncomeFragment.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.expensemanager;</span>
+
+<span class="s0">import </span><span class="s1">android.app.AlertDialog;</span>
+<span class="s0">import </span><span class="s1">android.content.Context;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull;</span>
+<span class="s0">import </span><span class="s1">androidx.cardview.widget.CardView;</span>
+<span class="s0">import </span><span class="s1">androidx.fragment.app.Fragment;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.LinearLayoutManager;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.RecyclerView;</span>
+
+<span class="s0">import </span><span class="s1">android.view.LayoutInflater;</span>
+<span class="s0">import </span><span class="s1">android.view.View;</span>
+<span class="s0">import </span><span class="s1">android.view.ViewGroup;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button;</span>
+<span class="s0">import </span><span class="s1">android.widget.EditText;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView;</span>
+
+<span class="s0">import </span><span class="s1">com.example.expensemanager.Model.Data;</span>
+<span class="s0">import </span><span class="s1">com.firebase.ui.database.FirebaseRecyclerAdapter;</span>
+<span class="s0">import </span><span class="s1">com.firebase.ui.database.FirebaseRecyclerAdapter_LifecycleAdapter;</span>
+<span class="s0">import </span><span class="s1">com.firebase.ui.database.FirebaseRecyclerOptions;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DataSnapshot;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseError;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseReference;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.FirebaseDatabase;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.ValueEventListener;</span>
+
+<span class="s0">import </span><span class="s1">java.text.DateFormat;</span>
+<span class="s0">import </span><span class="s1">java.util.ArrayList;</span>
+<span class="s0">import </span><span class="s1">java.util.Date;</span>
+
+<span class="s2">/**</span>
+ <span class="s2">* A simple {</span><span class="s3">@link </span><span class="s2">Fragment} subclass.</span>
+ <span class="s2">* Use the {</span><span class="s3">@link </span><span class="s2">IncomeFragment#newInstance} factory method to</span>
+ <span class="s2">* create an instance of this fragment.</span>
+ <span class="s2">*/</span>
+<span class="s0">public class </span><span class="s1">IncomeFragment </span><span class="s0">extends </span><span class="s1">Fragment {</span>
+
+    <span class="s2">//Firebase database</span>
+
+    <span class="s0">private </span><span class="s1">FirebaseAuth mAuth;</span>
+    <span class="s0">private </span><span class="s1">DatabaseReference mIncomeDatabase;</span>
+
+    <span class="s2">//Recyclerview...</span>
+
+    <span class="s0">private </span><span class="s1">RecyclerView recyclerView;</span>
+
+    <span class="s2">//TextView</span>
+
+    <span class="s0">private </span><span class="s1">TextView incomeTotalSum;</span>
+
+    <span class="s2">//Update edit text</span>
+
+    <span class="s0">private </span><span class="s1">EditText edtAmount;</span>
+    <span class="s0">private </span><span class="s1">EditText edtType;</span>
+    <span class="s0">private </span><span class="s1">EditText edtNote;</span>
+
+    <span class="s2">//Button for update and delete</span>
+
+    <span class="s0">private </span><span class="s1">Button btnUpdate;</span>
+    <span class="s0">private </span><span class="s1">Button btnDelete;</span>
+
+    <span class="s2">//Data item value</span>
+
+    <span class="s0">private </span><span class="s1">String type;</span>
+    <span class="s0">private </span><span class="s1">String note;</span>
+    <span class="s0">private int </span><span class="s1">amount;</span>
+
+    <span class="s0">private </span><span class="s1">String post_key;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">View onCreateView(LayoutInflater inflater, ViewGroup container,</span>
+                             <span class="s1">Bundle savedInstanceState) {</span>
+        <span class="s2">// Inflate the layout for this fragment</span>
+        <span class="s1">View myview = inflater.inflate(R.layout.fragment_income, container, </span><span class="s0">false</span><span class="s1">);</span>
+
+        <span class="s1">mAuth=FirebaseAuth.getInstance();</span>
+
+        <span class="s1">FirebaseUser mUser=mAuth.getCurrentUser();</span>
+        <span class="s1">String uid=mUser.getUid();</span>
+
+        <span class="s1">mIncomeDatabase= FirebaseDatabase.getInstance().getReference().child(</span><span class="s4">&quot;IncomeData&quot;</span><span class="s1">).child(uid);</span>
+
+        <span class="s1">incomeTotalSum=myview.findViewById(R.id.income_txt_result);</span>
+
+        <span class="s1">recyclerView=myview.findViewById(R.id.recycler_id_income);</span>
+
+        <span class="s1">LinearLayoutManager layoutManager=</span><span class="s0">new </span><span class="s1">LinearLayoutManager(getActivity());</span>
+
+        <span class="s1">layoutManager.setReverseLayout(</span><span class="s0">true</span><span class="s1">);</span>
+        <span class="s1">layoutManager.setStackFromEnd(</span><span class="s0">true</span><span class="s1">);</span>
+        <span class="s1">recyclerView.setHasFixedSize(</span><span class="s0">true</span><span class="s1">);</span>
+        <span class="s1">recyclerView.setLayoutManager(layoutManager);</span>
+
+        <span class="s1">mIncomeDatabase.addValueEventListener(</span><span class="s0">new </span><span class="s1">ValueEventListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onDataChange(@NonNull DataSnapshot snapshot) {</span>
+               <span class="s0">int </span><span class="s1">totalvalue =</span><span class="s5">0</span><span class="s1">;</span>
+
+                <span class="s0">for </span><span class="s1">(DataSnapshot mysnapshot:snapshot.getChildren()){</span>
+                    <span class="s1">Data data=mysnapshot.getValue(Data.</span><span class="s0">class</span><span class="s1">);</span>
+                    <span class="s1">totalvalue+=data.getAmount();</span>
+                    <span class="s1">String stTotalValue=String.valueOf(totalvalue);</span>
+                    <span class="s1">incomeTotalSum.setText(stTotalValue);</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onCancelled(@NonNull DatabaseError error) {</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s0">return </span><span class="s1">myview;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onStart() {</span>
+        <span class="s0">super</span><span class="s1">.onStart();</span>
+
+        <span class="s1">FirebaseRecyclerOptions&lt;Data&gt; options =</span><span class="s0">new </span><span class="s1">FirebaseRecyclerOptions.Builder&lt;Data&gt;()</span>
+                <span class="s1">.setQuery(mIncomeDatabase,Data.</span><span class="s0">class</span><span class="s1">).build();</span>
+
+        <span class="s1">FirebaseRecyclerAdapter&lt;Data,MyViewHolder&gt; adapter = </span><span class="s0">new </span><span class="s1">FirebaseRecyclerAdapter&lt;Data, MyViewHolder&gt;(options) {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">protected void </span><span class="s1">onBindViewHolder(@NonNull MyViewHolder holder, </span><span class="s0">final int </span><span class="s1">position, @NonNull </span><span class="s0">final </span><span class="s1">Data model) {</span>
+                <span class="s1">holder.setType(model.getType());</span>
+                <span class="s1">holder.setNote(model.getNote());</span>
+                <span class="s1">holder.setDate(model.getDate());</span>
+                <span class="s1">holder.setAmount(model.getAmount());</span>
+
+                <span class="s1">holder.mView.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+
+                        <span class="s1">post_key=getRef(position).getKey();</span>
+
+                        <span class="s1">type=model.getType();</span>
+                        <span class="s1">note=model.getNote();</span>
+                        <span class="s1">amount=model.getAmount();</span>
+                        <span class="s1">updateDataItem();</span>
+                    <span class="s1">}</span>
+                <span class="s1">});</span>
+            <span class="s1">}</span>
+
+            <span class="s1">@NonNull</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public </span><span class="s1">MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, </span><span class="s0">int </span><span class="s1">viewType) {</span>
+                <span class="s1">View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.income_recycler_data, parent,</span><span class="s0">false</span><span class="s1">);</span>
+
+                <span class="s0">return new </span><span class="s1">MyViewHolder(view);</span>
+            <span class="s1">}</span>
+        <span class="s1">};</span>
+        <span class="s1">adapter.startListening();</span>
+        <span class="s1">recyclerView.setAdapter(adapter);</span>
+    <span class="s1">}</span>
+    <span class="s0">public static class </span><span class="s1">MyViewHolder </span><span class="s0">extends </span><span class="s1">RecyclerView.ViewHolder{</span>
+        <span class="s1">View mView;</span>
+
+        <span class="s0">public </span><span class="s1">MyViewHolder(@NonNull View itemView) {</span>
+            <span class="s0">super</span><span class="s1">(itemView);</span>
+            <span class="s1">mView=itemView;</span>
+        <span class="s1">}</span>
+
+        <span class="s0">private void </span><span class="s1">setType(String type){</span>
+            <span class="s1">TextView mType=mView.findViewById(R.id.type_txt_income);</span>
+            <span class="s1">mType.setText(type);</span>
+        <span class="s1">}</span>
+
+        <span class="s0">private void </span><span class="s1">setNote(String note){</span>
+            <span class="s1">TextView mNote=mView.findViewById(R.id.note_txt_income);</span>
+            <span class="s1">mNote.setText(note);</span>
+        <span class="s1">}</span>
+
+        <span class="s0">private void </span><span class="s1">setDate(String date){</span>
+            <span class="s1">TextView mDate=mView.findViewById(R.id.date_txt_income);</span>
+            <span class="s1">mDate.setText(date);</span>
+        <span class="s1">}</span>
+
+        <span class="s0">private void </span><span class="s1">setAmount(</span><span class="s0">int </span><span class="s1">amount){</span>
+            <span class="s1">TextView mAmount=mView.findViewById(R.id.amount_txt_income);</span>
+            <span class="s1">String stamount=String.valueOf(amount);</span>
+            <span class="s1">mAmount.setText(stamount);</span>
+
+
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">updateDataItem(){</span>
+
+        <span class="s1">AlertDialog.Builder mydialog=</span><span class="s0">new </span><span class="s1">AlertDialog.Builder(getActivity());</span>
+        <span class="s1">LayoutInflater inflater=LayoutInflater.from(getActivity());</span>
+
+        <span class="s1">View myview=inflater.inflate(R.layout.update_data_item,</span><span class="s0">null</span><span class="s1">);</span>
+        <span class="s1">mydialog.setView(myview);</span>
+
+        <span class="s1">edtAmount=myview.findViewById(R.id.amount_edt);</span>
+        <span class="s1">edtNote=myview.findViewById(R.id.note_edt);</span>
+        <span class="s1">edtType=myview.findViewById(R.id.type_edt);</span>
+
+        <span class="s2">//Set data to edit text..</span>
+
+        <span class="s1">edtType.setText(type);</span>
+        <span class="s1">edtType.setSelection(type.length());</span>
+
+        <span class="s1">edtNote.setText(note);</span>
+        <span class="s1">edtNote.setSelection(note.length());</span>
+
+        <span class="s1">edtAmount.setText(String.valueOf(amount));</span>
+        <span class="s1">edtAmount.setSelection(String.valueOf(amount).length());</span>
+
+        <span class="s1">btnUpdate=myview.findViewById(R.id.btnupd_upd);</span>
+        <span class="s1">btnDelete=myview.findViewById(R.id.btnupd_del);</span>
+
+        <span class="s0">final </span><span class="s1">AlertDialog dialog=mydialog.create();</span>
+
+        <span class="s1">btnUpdate.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+
+                <span class="s1">type=edtType.getText().toString().trim();</span>
+                <span class="s1">note=edtNote.getText().toString().trim();</span>
+
+                <span class="s1">String mdamount=String.valueOf(amount);</span>
+
+                <span class="s1">mdamount=edtAmount.getText().toString().trim();</span>
+
+                <span class="s0">int </span><span class="s1">myAmount=Integer.parseInt(mdamount);</span>
+
+                <span class="s1">String mDate= DateFormat.getDateInstance().format(</span><span class="s0">new </span><span class="s1">Date());</span>
+                <span class="s1">Data data=</span><span class="s0">new </span><span class="s1">Data(myAmount,type,note,post_key,mDate);</span>
+                <span class="s1">mIncomeDatabase.child(post_key).setValue(data);</span>
+
+                <span class="s1">dialog.dismiss();</span>
+
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s1">btnDelete.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View view) {</span>
+
+                <span class="s1">mIncomeDatabase.child(post_key).removeValue();</span>
+                <span class="s1">dialog.dismiss();</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s1">dialog.show();</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span></pre>
+</body>
+</html>

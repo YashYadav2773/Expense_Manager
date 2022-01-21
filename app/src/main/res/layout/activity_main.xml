@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/back4"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="128dp"
+                android:layout_height="55dp"
+                android:layout_gravity="center|top"
+                android:layout_marginBottom="30dp"
+                android:fontFamily="@font/baloo_da"
+                android:gravity="center"
+                android:text="LOGIN"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="#F7F6FA"
+                android:textSize="37sp" />
+
+            <EditText
+                android:id="@+id/email_login"
+                android:layout_width="351dp"
+                android:layout_height="45dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/email_rounded"
+                android:drawablePadding="15dp"
+                android:drawableTint="@color/date_color"
+                android:fontFamily="@font/cantora_one"
+                android:hint="Email id"
+                android:paddingLeft="20dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                app:passwordToggleTint="@color/date_color"
+                app:passwordToggleEnabled="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/password_login"
+                    android:layout_width="351dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/email_rounded"
+                    android:drawablePadding="15dp"
+                    android:fontFamily="@font/cantora_one"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:paddingLeft="20dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="182dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/round_corner"
+                android:fontFamily="sans-serif-medium"
+                android:text="LOGIN"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="#F7F5F8"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/forgot_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:fontFamily="@font/andada"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Forgot Password ?"
+                android:textColor="#195750"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/signup_reg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/andada"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Don't have an account? Signup here!"
+                android:textColor="#195750"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
